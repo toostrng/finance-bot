@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, ForeignKey, Text, Boolean
+from sqlalchemy import create_engine, Column, Integer, BigInteger, String, Float, DateTime, ForeignKey, Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
@@ -10,7 +10,7 @@ class User(Base):
     __tablename__ = 'users'
     
     id = Column(Integer, primary_key=True)
-    telegram_id = Column(Integer, unique=True, nullable=False)
+    telegram_id = Column(BigInteger, unique=True, nullable=False)
     username = Column(String(100))
     first_name = Column(String(100))
     last_name = Column(String(100))
@@ -28,7 +28,7 @@ class Wallet(Base):
     __tablename__ = 'wallets'
     
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
     name = Column(String(100), nullable=False)
     currency = Column(String(3), nullable=False)
     balance = Column(Float, default=0.0)
@@ -44,7 +44,7 @@ class IncomeSource(Base):
     __tablename__ = 'income_sources'
     
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(Text)
     is_active = Column(Boolean, default=True)
@@ -59,7 +59,7 @@ class ExpenseCategory(Base):
     __tablename__ = 'expense_categories'
     
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(Text)
     color = Column(String(7), default="#3B82F6")  # Hex color
@@ -76,7 +76,7 @@ class Transaction(Base):
     __tablename__ = 'transactions'
     
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
     wallet_id = Column(Integer, ForeignKey('wallets.id'), nullable=False)
     transaction_type = Column(String(10), nullable=False)  # 'income' or 'expense'
     amount = Column(Float, nullable=False)

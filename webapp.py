@@ -13,6 +13,13 @@ app.config['SECRET_KEY'] = Config.SECRET_KEY
 # Create database tables
 create_tables()
 
+# Run migration if needed
+try:
+    from migrate_db import migrate_database
+    migrate_database()
+except Exception as e:
+    print(f"Migration warning: {e}")
+
 @app.route('/')
 def index():
     return render_template('index.html')
