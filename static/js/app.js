@@ -1,10 +1,10 @@
-// Finance Manager Web App JavaScript
+// Mobile Finance Manager Web App JavaScript
 
 class FinanceManager {
     constructor() {
         this.userId = null;
         this.userData = null;
-        this.currentTab = 'dashboard';
+        this.currentPage = 'dashboard-page';
         this.charts = {};
         
         this.init();
@@ -86,11 +86,11 @@ class FinanceManager {
     }
 
     initUI() {
-        // Navigation tabs
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                const tabName = e.currentTarget.dataset.tab;
-                this.switchTab(tabName);
+        // Bottom navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const pageName = e.currentTarget.dataset.page;
+                this.switchPage(pageName);
             });
         });
 
@@ -115,10 +115,6 @@ class FinanceManager {
 
         document.getElementById('add-expense-btn').addEventListener('click', () => {
             this.openTransactionModal('expense');
-        });
-
-        document.getElementById('add-wallet-btn').addEventListener('click', () => {
-            this.openWalletModal();
         });
 
         // Form submissions
@@ -156,7 +152,7 @@ class FinanceManager {
             this.saveSettings();
         });
 
-        // Tab-specific buttons
+        // Page-specific buttons
         document.getElementById('add-transaction-btn').addEventListener('click', () => {
             this.openTransactionModal();
         });
@@ -179,39 +175,39 @@ class FinanceManager {
         });
     }
 
-    switchTab(tabName) {
+    switchPage(pageName) {
         // Update navigation
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.classList.remove('active');
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
         });
-        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+        document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
 
         // Update content
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
         });
-        document.getElementById(tabName).classList.add('active');
+        document.getElementById(pageName).classList.add('active');
 
-        this.currentTab = tabName;
+        this.currentPage = pageName;
 
-        // Load tab-specific data
-        switch (tabName) {
-            case 'dashboard':
+        // Load page-specific data
+        switch (pageName) {
+            case 'dashboard-page':
                 this.loadDashboardData();
                 break;
-            case 'transactions':
+            case 'transactions-page':
                 this.loadTransactions();
                 break;
-            case 'wallets':
+            case 'wallets-page':
                 this.loadWallets();
                 break;
-            case 'categories':
+            case 'categories-page':
                 this.loadCategories();
                 break;
-            case 'income-sources':
+            case 'income-sources-page':
                 this.loadIncomeSources();
                 break;
-            case 'reports':
+            case 'reports-page':
                 this.loadReports();
                 break;
         }
@@ -274,15 +270,15 @@ class FinanceManager {
             <div class="transaction-card ${transaction.transaction_type}">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
                             <i class="fas fa-${transaction.transaction_type === 'income' ? 'arrow-up text-green-600' : 'arrow-down text-red-600'}"></i>
                         </div>
                     </div>
-                    <div class="ml-4 flex-1">
+                    <div class="ml-3 flex-1">
                         <div class="text-sm font-medium text-gray-900">
                             ${transaction.description || 'Без описания'}
                         </div>
-                        <div class="text-sm text-gray-500">
+                        <div class="text-xs text-gray-500">
                             ${transaction.wallet_name} • ${new Date(transaction.date).toLocaleDateString()}
                         </div>
                     </div>
@@ -323,15 +319,15 @@ class FinanceManager {
             <div class="transaction-card ${transaction.transaction_type}" data-id="${transaction.id}">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
                             <i class="fas fa-${transaction.transaction_type === 'income' ? 'arrow-up text-green-600' : 'arrow-down text-red-600'}"></i>
                         </div>
                     </div>
-                    <div class="ml-4 flex-1">
+                    <div class="ml-3 flex-1">
                         <div class="text-sm font-medium text-gray-900">
                             ${transaction.description || 'Без описания'}
                         </div>
-                        <div class="text-sm text-gray-500">
+                        <div class="text-xs text-gray-500">
                             ${transaction.wallet_name} • ${new Date(transaction.date).toLocaleDateString()}
                         </div>
                         ${transaction.income_source_name ? `<div class="text-xs text-gray-400">${transaction.income_source_name}</div>` : ''}
@@ -375,26 +371,22 @@ class FinanceManager {
             return;
         }
 
-        container.innerHTML = `
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${wallets.map(wallet => `
-                    <div class="wallet-card">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900">${wallet.name}</h3>
-                            <button class="text-gray-400 hover:text-red-600" onclick="app.deleteWallet(${wallet.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="wallet-balance">
-                            ${this.formatCurrency(wallet.balance, wallet.currency)}
-                        </div>
-                        <div class="text-sm text-gray-500 mt-2">
-                            Валюта: ${wallet.currency}
-                        </div>
-                    </div>
-                `).join('')}
+        container.innerHTML = wallets.map(wallet => `
+            <div class="wallet-card">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">${wallet.name}</h3>
+                    <button class="text-gray-400 hover:text-red-600" onclick="app.deleteWallet(${wallet.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="wallet-balance">
+                    ${this.formatCurrency(wallet.balance, wallet.currency)}
+                </div>
+                <div class="text-sm text-gray-500 mt-2">
+                    Валюта: ${wallet.currency}
+                </div>
             </div>
-        `;
+        `).join('');
     }
 
     async loadCategories() {
@@ -422,24 +414,20 @@ class FinanceManager {
             return;
         }
 
-        container.innerHTML = `
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                ${categories.map(category => `
-                    <div class="category-card">
-                        <div class="flex items-center">
-                            <span class="category-icon" style="color: ${category.color}">${category.icon}</span>
-                            <div>
-                                <h3 class="font-medium text-gray-900">${category.name}</h3>
-                                ${category.description ? `<p class="text-sm text-gray-500">${category.description}</p>` : ''}
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-red-600" onclick="app.deleteCategory(${category.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
+        container.innerHTML = categories.map(category => `
+            <div class="category-card">
+                <div class="flex items-center">
+                    <span class="category-icon" style="color: ${category.color}">${category.icon}</span>
+                    <div>
+                        <h3 class="font-medium text-gray-900">${category.name}</h3>
+                        ${category.description ? `<p class="text-sm text-gray-500">${category.description}</p>` : ''}
                     </div>
-                `).join('')}
+                </div>
+                <button class="text-gray-400 hover:text-red-600" onclick="app.deleteCategory(${category.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
-        `;
+        `).join('');
     }
 
     async loadIncomeSources() {
@@ -467,21 +455,17 @@ class FinanceManager {
             return;
         }
 
-        container.innerHTML = `
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                ${sources.map(source => `
-                    <div class="income-source-card">
-                        <div>
-                            <h3 class="font-medium text-gray-900">${source.name}</h3>
-                            ${source.description ? `<p class="text-sm text-gray-500">${source.description}</p>` : ''}
-                        </div>
-                        <button class="text-gray-400 hover:text-red-600" onclick="app.deleteIncomeSource(${source.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `).join('')}
+        container.innerHTML = sources.map(source => `
+            <div class="income-source-card">
+                <div>
+                    <h3 class="font-medium text-gray-900">${source.name}</h3>
+                    ${source.description ? `<p class="text-sm text-gray-500">${source.description}</p>` : ''}
+                </div>
+                <button class="text-gray-400 hover:text-red-600" onclick="app.deleteIncomeSource(${source.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
-        `;
+        `).join('');
     }
 
     async loadReports() {
@@ -523,7 +507,12 @@ class FinanceManager {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 12
+                            }
+                        }
                     }
                 }
             }
@@ -555,7 +544,12 @@ class FinanceManager {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 12
+                            }
+                        }
                     }
                 }
             }
@@ -639,7 +633,7 @@ class FinanceManager {
                 this.closeAllModals();
                 this.showSuccess('Транзакция добавлена');
                 this.loadDashboardData();
-                if (this.currentTab === 'transactions') {
+                if (this.currentPage === 'transactions-page') {
                     this.loadTransactions();
                 }
             } else {
@@ -822,7 +816,7 @@ class FinanceManager {
             if (response.ok) {
                 this.showSuccess('Транзакция удалена');
                 this.loadDashboardData();
-                if (this.currentTab === 'transactions') {
+                if (this.currentPage === 'transactions-page') {
                     this.loadTransactions();
                 }
             } else {
