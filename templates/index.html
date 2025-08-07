@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Финансовый менеджер</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Loading Screen -->
+    <div id="loading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+            <p class="mt-4 text-gray-600">Загрузка...</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-wallet text-2xl text-blue-600 mr-3"></i>
+                        <h1 class="text-xl font-bold text-gray-900">Финансовый менеджер</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-sm text-gray-600">
+                            <span id="user-name"></span>
+                        </div>
+                        <button id="settings-btn" class="p-2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-8">
+                    <button class="nav-tab active" data-tab="dashboard">
+                        <i class="fas fa-chart-pie mr-2"></i>
+                        Обзор
+                    </button>
+                    <button class="nav-tab" data-tab="transactions">
+                        <i class="fas fa-exchange-alt mr-2"></i>
+                        Транзакции
+                    </button>
+                    <button class="nav-tab" data-tab="wallets">
+                        <i class="fas fa-wallet mr-2"></i>
+                        Кошельки
+                    </button>
+                    <button class="nav-tab" data-tab="categories">
+                        <i class="fas fa-tags mr-2"></i>
+                        Категории
+                    </button>
+                    <button class="nav-tab" data-tab="income-sources">
+                        <i class="fas fa-money-bill-wave mr-2"></i>
+                        Источники дохода
+                    </button>
+                    <button class="nav-tab" data-tab="reports">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Отчеты
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Total Balance -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <i class="fas fa-wallet text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Общий баланс</p>
+                                <p id="total-balance" class="text-2xl font-bold text-gray-900">0.00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Income -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <i class="fas fa-arrow-up text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Доходы (месяц)</p>
+                                <p id="monthly-income" class="text-2xl font-bold text-green-600">0.00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Expenses -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-red-100 rounded-lg">
+                                <i class="fas fa-arrow-down text-red-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Расходы (месяц)</p>
+                                <p id="monthly-expenses" class="text-2xl font-bold text-red-600">0.00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Net Income -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <i class="fas fa-chart-line text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Чистый доход</p>
+                                <p id="net-income" class="text-2xl font-bold text-purple-600">0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow p-6 mb-8">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Быстрые действия</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button id="add-income-btn" class="flex items-center justify-center p-4 border-2 border-dashed border-green-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition-colors">
+                            <i class="fas fa-plus text-green-600 mr-2"></i>
+                            <span class="text-green-600 font-medium">Добавить доход</span>
+                        </button>
+                        <button id="add-expense-btn" class="flex items-center justify-center p-4 border-2 border-dashed border-red-300 rounded-lg hover:border-red-400 hover:bg-red-50 transition-colors">
+                            <i class="fas fa-plus text-red-600 mr-2"></i>
+                            <span class="text-red-600 font-medium">Добавить расход</span>
+                        </button>
+                        <button id="add-wallet-btn" class="flex items-center justify-center p-4 border-2 border-dashed border-blue-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                            <i class="fas fa-plus text-blue-600 mr-2"></i>
+                            <span class="text-blue-600 font-medium">Новый кошелек</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">Последние транзакции</h2>
+                    </div>
+                    <div id="recent-transactions" class="divide-y divide-gray-200">
+                        <!-- Transactions will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Tab -->
+            <div id="transactions" class="tab-content">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-900">Транзакции</h2>
+                        <div class="flex space-x-2">
+                            <select id="transaction-filter" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option value="all">Все</option>
+                                <option value="income">Доходы</option>
+                                <option value="expense">Расходы</option>
+                            </select>
+                            <button id="add-transaction-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                                <i class="fas fa-plus mr-1"></i>
+                                Добавить
+                            </button>
+                        </div>
+                    </div>
+                    <div id="transactions-list" class="divide-y divide-gray-200">
+                        <!-- Transactions will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallets Tab -->
+            <div id="wallets" class="tab-content">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-900">Кошельки</h2>
+                        <button id="add-wallet-modal-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                            <i class="fas fa-plus mr-1"></i>
+                            Добавить кошелек
+                        </button>
+                    </div>
+                    <div id="wallets-list" class="p-6">
+                        <!-- Wallets will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Tab -->
+            <div id="categories" class="tab-content">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-900">Категории расходов</h2>
+                        <button id="add-category-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                            <i class="fas fa-plus mr-1"></i>
+                            Добавить категорию
+                        </button>
+                    </div>
+                    <div id="categories-list" class="p-6">
+                        <!-- Categories will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Income Sources Tab -->
+            <div id="income-sources" class="tab-content">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-900">Источники дохода</h2>
+                        <button id="add-income-source-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                            <i class="fas fa-plus mr-1"></i>
+                            Добавить источник
+                        </button>
+                    </div>
+                    <div id="income-sources-list" class="p-6">
+                        <!-- Income sources will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reports" class="tab-content">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Expense by Category Chart -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-900">Расходы по категориям</h2>
+                        </div>
+                        <div class="p-6">
+                            <canvas id="expense-chart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Income by Source Chart -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-900">Доходы по источникам</h2>
+                        </div>
+                        <div class="p-6">
+                            <canvas id="income-chart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Overview -->
+                    <div class="bg-white rounded-lg shadow lg:col-span-2">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-900">Месячный обзор</h2>
+                        </div>
+                        <div class="p-6">
+                            <canvas id="monthly-chart" width="800" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Transaction Modal -->
+    <div id="transaction-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="transaction-modal-title" class="text-lg font-semibold text-gray-900">Добавить транзакцию</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="transaction-form" class="modal-body">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Тип</label>
+                        <select id="transaction-type" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                            <option value="income">Доход</option>
+                            <option value="expense">Расход</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Кошелек</label>
+                        <select id="transaction-wallet" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                            <!-- Wallets will be loaded here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Сумма</label>
+                        <input type="number" id="transaction-amount" step="0.01" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Валюта</label>
+                        <select id="transaction-currency" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                            <option value="BYN">BYN</option>
+                            <option value="RUB">RUB</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                    <div id="income-source-field" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Источник дохода</label>
+                        <select id="transaction-income-source" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                            <!-- Income sources will be loaded here -->
+                        </select>
+                    </div>
+                    <div id="expense-category-field" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Категория</label>
+                        <select id="transaction-expense-category" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                            <!-- Categories will be loaded here -->
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Описание</label>
+                    <textarea id="transaction-description" class="w-full border border-gray-300 rounded-md px-3 py-2" rows="3"></textarea>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Дата</label>
+                    <input type="datetime-local" id="transaction-date" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary modal-close">Отмена</button>
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Wallet Modal -->
+    <div id="wallet-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold text-gray-900">Добавить кошелек</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="wallet-form" class="modal-body">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Название</label>
+                    <input type="text" id="wallet-name" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Валюта</label>
+                    <select id="wallet-currency" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                        <option value="BYN">BYN</option>
+                        <option value="RUB">RUB</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary modal-close">Отмена</button>
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="category-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold text-gray-900">Добавить категорию</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="category-form" class="modal-body">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Название</label>
+                    <input type="text" id="category-name" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Описание</label>
+                    <textarea id="category-description" class="w-full border border-gray-300 rounded-md px-3 py-2" rows="3"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Цвет</label>
+                        <input type="color" id="category-color" value="#3B82F6" class="w-full h-10 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Иконка</label>
+                        <input type="text" id="category-icon" value="💰" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary modal-close">Отмена</button>
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Income Source Modal -->
+    <div id="income-source-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold text-gray-900">Добавить источник дохода</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="income-source-form" class="modal-body">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Название</label>
+                    <input type="text" id="income-source-name" class="w-full border border-gray-300 rounded-md px-3 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Описание</label>
+                    <textarea id="income-source-description" class="w-full border border-gray-300 rounded-md px-3 py-2" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary modal-close">Отмена</button>
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold text-gray-900">Настройки</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Валюта по умолчанию</label>
+                    <select id="default-currency" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <option value="BYN">BYN</option>
+                        <option value="RUB">RUB</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary modal-close">Отмена</button>
+                    <button id="save-settings" class="btn-primary">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html> 

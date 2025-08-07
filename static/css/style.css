@@ -1,0 +1,290 @@
+/* Custom styles for the finance manager app */
+
+/* Navigation tabs */
+.nav-tab {
+    @apply py-4 px-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors;
+}
+
+.nav-tab.active {
+    @apply border-blue-500 text-blue-600;
+}
+
+/* Tab content */
+.tab-content {
+    @apply hidden;
+}
+
+.tab-content.active {
+    @apply block;
+}
+
+/* Modal styles */
+.modal {
+    @apply fixed inset-0 z-50 overflow-y-auto;
+}
+
+.modal.hidden {
+    @apply hidden;
+}
+
+.modal-overlay {
+    @apply fixed inset-0 bg-gray-600 bg-opacity-50 transition-opacity;
+}
+
+.modal-content {
+    @apply relative bg-white rounded-lg shadow-xl max-w-md mx-auto mt-20;
+}
+
+.modal-header {
+    @apply flex items-center justify-between p-6 border-b border-gray-200;
+}
+
+.modal-close {
+    @apply text-gray-400 hover:text-gray-600 text-2xl font-bold cursor-pointer;
+}
+
+.modal-body {
+    @apply p-6;
+}
+
+.modal-footer {
+    @apply flex justify-end space-x-3 pt-4 border-t border-gray-200;
+}
+
+/* Button styles */
+.btn-primary {
+    @apply bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors;
+}
+
+.btn-secondary {
+    @apply bg-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-400 transition-colors;
+}
+
+.btn-danger {
+    @apply bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors;
+}
+
+/* Transaction card styles */
+.transaction-card {
+    @apply flex items-center justify-between p-4 hover:bg-gray-50 transition-colors;
+}
+
+.transaction-card.income {
+    @apply border-l-4 border-green-500;
+}
+
+.transaction-card.expense {
+    @apply border-l-4 border-red-500;
+}
+
+.transaction-amount.income {
+    @apply text-green-600 font-semibold;
+}
+
+.transaction-amount.expense {
+    @apply text-red-600 font-semibold;
+}
+
+/* Wallet card styles */
+.wallet-card {
+    @apply bg-white rounded-lg shadow p-6 border border-gray-200 hover:shadow-md transition-shadow;
+}
+
+.wallet-balance {
+    @apply text-2xl font-bold text-gray-900;
+}
+
+/* Category card styles */
+.category-card {
+    @apply flex items-center justify-between p-4 bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-shadow;
+}
+
+.category-icon {
+    @apply text-2xl mr-3;
+}
+
+/* Income source card styles */
+.income-source-card {
+    @apply flex items-center justify-between p-4 bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-shadow;
+}
+
+/* Loading animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: .5;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+    .modal-content {
+        @apply mx-4 mt-10;
+    }
+    
+    .nav-tab {
+        @apply text-xs px-1;
+    }
+    
+    .nav-tab i {
+        @apply mr-1;
+    }
+}
+
+/* Chart container styles */
+.chart-container {
+    @apply relative h-64;
+}
+
+/* Form improvements */
+input:focus, select:focus, textarea:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-opacity-50 border-blue-500;
+}
+
+/* Status indicators */
+.status-indicator {
+    @apply inline-block w-2 h-2 rounded-full;
+}
+
+.status-active {
+    @apply bg-green-500;
+}
+
+.status-inactive {
+    @apply bg-gray-400;
+}
+
+/* Empty state styles */
+.empty-state {
+    @apply text-center py-12;
+}
+
+.empty-state-icon {
+    @apply text-6xl text-gray-300 mb-4;
+}
+
+.empty-state-text {
+    @apply text-gray-500 text-lg;
+}
+
+/* Success/Error messages */
+.message {
+    @apply p-4 rounded-md mb-4;
+}
+
+.message-success {
+    @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.message-error {
+    @apply bg-red-100 text-red-800 border border-red-200;
+}
+
+.message-info {
+    @apply bg-blue-100 text-blue-800 border border-blue-200;
+}
+
+/* Tooltip styles */
+.tooltip {
+    @apply relative;
+}
+
+.tooltip:hover .tooltip-text {
+    @apply visible opacity-100;
+}
+
+.tooltip-text {
+    @apply invisible absolute z-10 py-2 px-3 text-sm text-white bg-gray-900 rounded-lg opacity-0 transition-opacity duration-300;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-text::after {
+    content: "";
+    @apply absolute top-full left-1/2 transform -translate-x-1/2;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1f2937 transparent transparent transparent;
+}
+
+/* Animation classes */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Currency formatting */
+.currency-amount {
+    @apply font-mono;
+}
+
+/* Responsive grid improvements */
+@media (max-width: 640px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark mode support (if needed in future) */
+@media (prefers-color-scheme: dark) {
+    /* Dark mode styles can be added here */
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-only {
+        display: block !important;
+    }
+} 

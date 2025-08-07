@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: finance-bot-web
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn webapp:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: TELEGRAM_TOKEN
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: finance-bot-db
+          property: connectionString
+      - key: WEBAPP_URL
+        value: https://finance-bot-web.onrender.com
+      - key: DEBUG
+        value: false
+
+databases:
+  - name: finance-bot-db
+    databaseName: finance_bot
+    user: finance_bot_user 
