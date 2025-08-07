@@ -3,7 +3,7 @@ services:
     name: finance-bot-web
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn webapp:app --bind 0.0.0.0:$PORT
+    startCommand: python webapp_only.py
     envVars:
       - key: TELEGRAM_TOKEN
         sync: false

@@ -34,11 +34,12 @@ def main():
     missing_vars = [var for var in required_vars if not os.getenv(var)]
     
     if missing_vars:
-        print(f"❌ Missing required environment variables: {', '.join(missing_vars)}")
-        print("Please create a .env file with the following variables:")
-        for var in missing_vars:
-            print(f"  {var}=your_value_here")
-        sys.exit(1)
+        print(f"⚠️  Missing TELEGRAM_TOKEN - running web app only")
+        print("To run the full bot, set TELEGRAM_TOKEN environment variable")
+        
+        # Run only web app
+        run_webapp()
+        return
     
     # Set default values for optional variables
     if not os.getenv('WEBAPP_URL'):
